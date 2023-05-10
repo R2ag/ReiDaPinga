@@ -6,15 +6,15 @@
     include_once "bd_produto.php";
 
     $conteudo = "Página de cadastro de produtos";
-    
-    if ( count($_POST) > 0 )
-    {
+    $msg = "";
+
+    if ( count($_POST) > 0 ){
         $BD = BD_Conectar();
-        P_Inserir( $BD, $_POST );
+        Inserir( $BD, $_POST );
         BD_Desconectar( $BD );
     }
     
-    $conteudo .= P_Exibir_Formulario();
+    $conteudo .= Exibir_Formulario($msg);
     
     echo Monta_Doc_HTML( basename(__FILE__), $conteudo );
 

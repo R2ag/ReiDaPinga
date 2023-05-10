@@ -1,18 +1,17 @@
 <?php
-session_start();
+    session_start();
 
-if( session_status() == PHP_SESSION_ACTIVE )
-{
-    unset($_SESSION);
-    $_SESSION = array();
-    session_destroy();
-}
+    if( session_status() == PHP_SESSION_ACTIVE ){
+        unset($_SESSION);
+        $_SESSION = array();
+        session_destroy();
+    }
 
 
-include_once "doc_HTML.php";
+    include_once "doc_HTML.php";
 
-$logout = "Tú tá fóra!";
+    $logout = "Tú tá fóra!";
 
-echo Monta_Doc_HTML( basename(__FILE__), $logout );
+    echo Monta_Doc_HTML( basename(__FILE__), $logout );
 
 ?>
