@@ -87,7 +87,9 @@
             $listagem .= $registro['email'] . '<br>';
             $listagem .= $registro['login'] . '<br>';
             $listagem .= $registro['senha'] . '<br>';
-            $listagem .= "<img src='imagens/".$registro['avatar']."' width='200' height='150'>".'<br>';
+            if($registro['avatar']){
+                $listagem .= "<img src='imagens/cliente".$registro['avatar']."' width='200' height='150'>".'<br>';
+            }
         }
 
         return $listagem;
@@ -101,7 +103,7 @@
 
         $form .= "<table>";
         $form .= "<tr><td>Login: </td><td> <input type='text' name='login'> </td></tr>";
-        $form .= "<tr><td>Senha: </td><td> <input type='password' name='Senha'> </td></tr>";
+        $form .= "<tr><td>Senha: </td><td> <input type='password' name='senha'> </td></tr>";
         $form .= "<tr><td></td><td> <input type='submit' value='Enviar'>";
         $form .= " <input type='reset' value='Cancelar'></td></tr>";
         $form .= "</table>";

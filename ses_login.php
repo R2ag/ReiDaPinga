@@ -22,7 +22,7 @@
     $login_falhou = "";
     if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         $login = $_POST['login'];
-        $senha = $_POST['Senha'];
+        $senha = $_POST['senha'];
 
         $bd = BD_Conectar();
         if ( Autorizar( $bd, $login, $senha ) ){

@@ -13,7 +13,7 @@
                 cpf      VARCHAR(11)  NOT NULL,
                 cep      VARCHAR(8),
                 email    TEXT         NOT NULL,
-                login    VARCHAR(11)  NOT NULL,
+                login    TEXT         NOT NULL,
                 senha    TEXT         NOT NULL,
                 avatar   TEXT,
                 
@@ -21,19 +21,20 @@
         );
 
         $stmt = $db->prepare(
-            "INSERT INTO cliente (nome, cpf, endereco, cep, pais, login, senha)
-            VALUES(:nome, :cpf, :endereco, :cep, :pais, :login, :senha);"
+            "INSERT INTO cliente (nome, cpf, cep, email, login, senha)
+            VALUES(:nome, :cpf, :cep, :email, :login, :senha);"
         );
 
         $stmt->bindValue(':nome', 'Rafael', SQLITE3_TEXT);
         $stmt->bindValue(':cpf', '12345678910', SQLITE3_TEXT);
+        $stmt->bindValue(':cep', '12345678', SQLITE3_TEXT);
         $stmt->bindValue(':email', 'rafael@rlag.com', SQLITE3_TEXT);
         $stmt->bindValue(':login', 'rafael', SQLITE3_TEXT);
         $stmt->bindValue(':senha', 'rafael', SQLITE3_TEXT);
 
         $stmt->execute();
 
-        $REGISTROS = $db->query("SELECT * FROM clientes;");
+        $REGISTROS = $db->query("SELECT * FROM cliente;");
         $listagem = "<h1>Clientes</h1>";
         foreach($REGISTROS as $registro){
             $listagem .= '<h4>' . $registro['nome'] . '</h4>';

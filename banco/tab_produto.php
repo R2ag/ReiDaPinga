@@ -44,7 +44,9 @@
             $listagem .= $registro['desc']."<br>";  
             $listagem .= "R$ ".$registro['preco']."<br>";
             $listagem .= $registro['graduacao']."%"."<br>";
-            $listagem .= "<img src='../imagens/".$registro['imagem1']."' width='20%' height='20%'>";
+            if ($registro['imagem1']){
+				$listagem .= "<img src='imagens/produtos/".$registro['imagem1']."' height='384'> <br>";
+			}
             $listagem .= '<hr>';
         }
 
