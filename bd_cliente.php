@@ -1,27 +1,6 @@
 <?php 
     include_once "controle_bd.php";
 
-    function Criar_Tabela(){
-        $BD = BD_Conectar();
-
-        $res = $BD->exec(
-            "drop table if exists cliente;
-            CREATE TABLE IF NOT EXISTS cliente(
-                id       SMALLINT     AUTO_INCREMENT,
-                nome     TEXT         NOT NULL,
-                cpf      VARCHAR(11)  NOT NULL,
-                cep      VARCHAR(8),
-                email    TEXT         NOT NULL,
-                login    VARCHAR(11)  NOT NULL,
-                senha    TEXT         NOT NULL,
-                avatar   TEXT,
-                
-                PRIMARY KEY(id) );"
-        );
-
-        BD_Desconectar($BD);
-    }
-
     function Exibir_Formulario($Msg){
         $form = "";
         $form .= "<form action='cad_cliente.php' method='post' enctype='multipart/form-data'>";
@@ -39,43 +18,46 @@
 
         $form .= "</form>";
 
-        if ( $Msg ){
+        if ($Msg){
             $form .= "<span class='erro'>".$Msg."</span>";
         }
 
         return $form;
     }
 
-    function Inserir( $Conexao, $DADOS = [] ){
-
+    function Inserir($Conexao, $DADOS = []){
         $avatar = "";
+        $error = "";
+        
         if (count($_FILES) > 0){
-            $msg_error = Salvar_Imagem($_FILES);
-            $avatar = $_FILES["Avatar"]["Name"];
-        }
-
-        if(email_not_found($Conexao, $DADOS["Email"])){
-            $stmt = $Conexao->prepare(
-                "INSERT INTO cliente (nome, cpf, cep, email, login, senha, avatar)
-                VALUES(:nome, :cpf, :cep, :email, :login, :senha, :avatar);"
-            );
-
-            $stmt->bindValue(':nome', $DADOS["Nome"], SQLITE3_TEXT);
-            $stmt->bindValue(':cpf', $DADOS["Cpf"], SQLITE3_TEXT);
-            $stmt->bindValue(':cep', $DADOS["Cep"], SQLITE3_TEXT);
-            $stmt->bindValue(':email', $DADOS["Email"], SQLITE3_TEXT);
-            $stmt->bindValue(':login', $DADOS["Login"], SQLITE3_TEXT);
-            $stmt->bindValue(':senha', $DADOS["Senha"], SQLITE3_TEXT);
-            $stmt->bindValue(':avatar', $avatar, SQLITE3_TEXT);
-        
-            $stmt->execute();
-        
-        }else{
-            return "Já existe um cliente cadastrado com o email informado.";
+            $error = Salvar_Imagem($_FILES);
+            $avatar = $_FILES["Avatar"]["name"];
         }
         
+        if ($error == "") {
+            if(email_not_found($Conexao, $DADOS["Email"])){
+                $sql = "INSERT INTO cliente (nome, cpf, cep, email, login, senha, avatar) ";
+                $sql .= "VALUES(:nome, :cpf, :cep, :email, :login, :senha, :avatar);";
+                
+                $stmt = $Conexao->prepare($sql);
+    
+                $stmt->bindValue(':nome', $DADOS["Nome"], PDO::PARAM_STR);
+                $stmt->bindValue(':cpf', $DADOS["Cpf"], PDO::PARAM_STR);
+                $stmt->bindValue(':cep', $DADOS["Cep"], PDO::PARAM_STR);
+                $stmt->bindValue(':email', $DADOS["Email"], PDO::PARAM_STR);
+                $stmt->bindValue(':login', $DADOS["Login"], PDO::PARAM_STR);
+                $stmt->bindValue(':senha', $DADOS["Senha"], PDO::PARAM_STR);
+                $stmt->bindValue(':avatar', $avatar, PDO::PARAM_STR);
+            
+                $stmt->execute();
+        
+            }else{
+                return "Já existe um cliente cadastrado com o email informado.";
+            }    
+        }
     }
-    function Consultar( $p_Conexao ){
+    
+    function Consultar($p_Conexao){
         $REGISTROS = $p_Conexao->query("SELECT * FROM cliente;");
 
         $listagem = "<h1>Clientes</h1>";
@@ -88,7 +70,7 @@
             $listagem .= $registro['login'] . '<br>';
             $listagem .= $registro['senha'] . '<br>';
             if($registro['avatar']){
-                $listagem .= "<img src='imagens/cliente".$registro['avatar']."' width='200' height='150'>".'<br>';
+                    $listagem .= "<img src='imagens/cliente/".$registro['avatar']."' width='200' height='150'>".'<br>';
             }
         }
 
@@ -96,7 +78,7 @@
         
     }
 
-    function Login( $Mensagem ){
+    function Login($Mensagem){
         $form = "";
 
         $form .= "<form action='ses_login.php' method='post'>";
@@ -114,49 +96,49 @@
         return $form;
     }
 
-    function Autorizar( $Conexao, $Login, $Senha){
-        $sql = "select * from cliente where login= :login AND senha = :senha;";
+    function Autorizar($Conexao, $Login, $Senha){
+        $sql = "SELECT * FROM cliente WHERE login = :login AND senha = :senha;";
         $comando = $Conexao->prepare($sql);
-        $comando->bindValue(':login', $Login, SQLITE3_TEXT);
-        $comando->bindValue(':senha', $Senha, SQLITE3_TEXT);
+        $comando->bindValue(':login', $Login, PDO::PARAM_STR);
+        $comando->bindValue(':senha', $Senha, PDO::PARAM_STR);
         $comando->execute();
 
         $REGISTRO = $comando->fetchAll(PDO::FETCH_ASSOC);
         
-        return ( count($REGISTRO)  == 1 );
+        return (count($REGISTRO) == 1);
     }
 
     function email_not_found($Conexao, $Email){
         $sql = "SELECT * FROM cliente WHERE email = :email;";
 
         $stmt = $Conexao->prepare($sql);
-        $stmt->bindValue(':email', $Email, SQLITE3_TEXT);
+        $stmt->bindValue(':email', $Email, PDO::PARAM_STR);
         $stmt->execute();
 
         $REGISTRO = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return ( count($REGISTRO) > 0 ); 
+        return (count($REGISTRO) == 0); 
     }
 
-    function Verifica_Duplicidade( $Conexao, $Login, $Email ){
-        $sql  = "Select * from cliente Where email = :email OR login = :login;";
+    function Verifica_Duplicidade($Conexao, $Login, $Email){
+        $sql  = "SELECT * FROM cliente WHERE email = :email OR login = :login;";
         
         $comando = $Conexao->prepare($sql);
-        $comando->bindValue(':login', $Login, SQLITE3_TEXT);
-        $comando->bindValue(':email', $Email, SQLITE3_TEXT);
+        $comando->bindValue(':login', $Login, PDO::PARAM_STR);
+        $comando->bindValue(':email', $Email, PDO::PARAM_STR);
         $comando->execute();
 
         $REGISTRO = $comando->fetchAll(PDO::FETCH_ASSOC);
 
-        return ( count($REGISTRO) > 0 ); 
+        return (count($REGISTRO) > 0); 
     }
 
-    function Salvar_Imagem( $IMAGENS){
+    function Salvar_Imagem($IMAGENS){
         $msg_erro = "";
         $gravar_arquivo = true;
 
-        foreach( $IMAGENS as $imagem ){
-            if ( $imagem["name"] != "" ){
+        foreach($IMAGENS as $imagem){
+            if ($imagem["name"] != ""){
                 $destino = "imagens/cliente/" . basename($imagem["name"]);
 
                 if (file_exists($destino)){
@@ -165,22 +147,19 @@
                     
                 } 
 
-                if ( filesize( $imagem["tmp_name"] ) > 512*1024 ){
+                if (filesize($imagem["tmp_name"]) > 512*1024){
                     $msg_erro = "A imagem: '".basename($imagem["name"])."', deve ter no máximo 512KB.";
                     $gravar_arquivo = false;
                 }
                 
-                if ( $gravar_arquivo ){
-                    if ( ! move_uploaded_file($imagem["tmp_name"], $destino) ){
+                if ($gravar_arquivo){
+                    if (!move_uploaded_file($imagem["tmp_name"], $destino)){
                         $msg_erro = "Não foi possível salvar a imagem: '".basename($imagem["name"])."'.";
                     }
                 }
             }
-        
         }
-
         return $msg_erro;
     }
-
 
 ?>
