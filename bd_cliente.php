@@ -117,12 +117,12 @@
     function Autorizar( $Conexao, $Login, $Senha){
         $sql = "select * from cliente where login= :login AND senha = :senha;";
         $comando = $Conexao->prepare($sql);
-        $comando->bindValue(':email', $Login, SQLITE3_TEXT);
+        $comando->bindValue(':login', $Login, SQLITE3_TEXT);
         $comando->bindValue(':senha', $Senha, SQLITE3_TEXT);
         $comando->execute();
 
         $REGISTRO = $comando->fetchAll(PDO::FETCH_ASSOC);
-
+        
         return ( count($REGISTRO)  == 1 );
     }
 

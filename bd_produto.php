@@ -64,7 +64,7 @@
 		}
 		
 		if ($error == "") {
-			$sql = "INSERT INTO produto (nome, descricao, preco, graduacao, ano_fab, imagem1, imagem2, imagem3) 
+			$sql = "INSERT INTO produto (nome, desc, preco, graduacao, ano_fab, imagem1, imagem2, imagem3) 
 				VALUES (:nome, :descricao , :preco, :graduacao, :ano_fab, imagem1, imagem2, imagem3);";
 
 			$stmt = $Conexao->prepare($sql);
@@ -111,7 +111,7 @@
 		$sql = "SELECT * FROM produto WHERE nome = :nome;";
 		$stmt = $Conexao->prepare($sql);
 		$stmt->bindValue(':nome', $Nome, SQLITE3_TEXT);
-		$stmt->exeute();
+		$stmt->execute();
 
 		$REGISTROS = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -119,7 +119,7 @@
 
 		foreach($REGISTROS as $registro){
 			$listagem .= '<h4>'.$registro['nome'].'</h4>';
-			$listagem .= $registro['descricao']."<br>";
+			$listagem .= $registro['desc']."<br>";
 			$listagem .= $registro['graduacao']."<br>";
 			$listagem .= $registro['ano_fab']."<br>";
 			$listagem .= $registro['preco']."<br>";
