@@ -97,15 +97,27 @@
     }
 
     function Autorizar($Conexao, $Login, $Senha){
+        $id_cliente = 0;
+        
         $sql = "SELECT * FROM cliente WHERE login = :login AND senha = :senha;";
         $comando = $Conexao->prepare($sql);
         $comando->bindValue(':login', $Login, PDO::PARAM_STR);
         $comando->bindValue(':senha', $Senha, PDO::PARAM_STR);
         $comando->execute();
 
-        $REGISTRO = $comando->fetchAll(PDO::FETCH_ASSOC);
+        $REGISTROS = $comando->fetchAll(PDO::FETCH_ASSOC);
         
-        return (count($REGISTRO) == 1);
+        //die("<pre>".print_r($REGISTROS, true)."</pre>");
+        if (count($REGISTROS) == 1)
+        {
+            $registro = $REGISTROS[0];
+            if(array_key_exists("id", $registro))
+            {
+                $id_cliente = $registro["id"];
+            }
+        }
+
+        return ($id_cliente);
     }
 
     function email_not_found($Conexao, $Email){

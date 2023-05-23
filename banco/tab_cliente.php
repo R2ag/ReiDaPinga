@@ -8,16 +8,14 @@
         $res = $db->exec(
             "drop table if exists cliente;
             CREATE TABLE IF NOT EXISTS cliente(
-                id       SMALLINT     AUTO_INCREMENT,
+                id       INTEGER    PRIMARY KEY      AUTOINCREMENT,
                 nome     TEXT         NOT NULL,
                 cpf      VARCHAR(11)  NOT NULL,
                 cep      VARCHAR(8),
                 email    TEXT         NOT NULL,
                 login    TEXT         NOT NULL,
                 senha    TEXT         NOT NULL,
-                avatar   TEXT,
-                
-                PRIMARY KEY(id) );"
+                avatar   TEXT);"
         );
 
         $stmt = $db->prepare(

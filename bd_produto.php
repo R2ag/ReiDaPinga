@@ -60,13 +60,14 @@
 
 		return $error;
 	}
+
 	function Consultar($Conexao){
 		$REGISTROS = $Conexao->query("SELECT * FROM produto;");
 
 		$listagem = "<h1>Produtos</h1>";
 		
 		foreach ($REGISTROS as $registro){
-			$listagem .= "<a href='desc_produto.php?produto=".urlencode($registro['nome'])."'>";
+			$listagem .= "<a href='desc_produto.php?produto=".urlencode($registro['id'])."'>";
 			$listagem .= "<img src='imagens/produto/".$registro['imagem1']."' width='200' height='150'>";
 			$listagem .= '<h4>' . $registro['nome'] . '</h4>';
 			$listagem .= "R$ ".$registro['preco']."<br>";
@@ -77,22 +78,29 @@
 		return $listagem;
 	}
 
-	function Detalhar($Conexao, $Nome){
-		$sql = "SELECT * FROM produto WHERE nome = :nome;";
+	function Detalhar($Conexao, $id_produto){
+		$sql = "SELECT * FROM produto WHERE id = :id_produto;";
 		$stmt = $Conexao->prepare($sql);
-		$stmt->bindValue(':nome', $Nome, PDO::PARAM_STR);
+		$stmt->bindValue(':nome', $id_produto, PDO::PARAM_INT);
 		$stmt->execute();
 
 		$REGISTROS = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		$listagem = "<h1>Produto: </h1>";
+        $listagem = "";
+        
+		if(count ($REGISTROS) == 1){
+            
+            $registro = $REGISTROS[0];
 
-		foreach($REGISTROS as $registro){
-			$listagem .= '<h4>'.$registro['nome'].'</h4>';
+            $listagem .= "<h1>Produto: </h1>";
+            
+            $listagem .= '<h4>'.$registro['nome'].'</h4>';
 			$listagem .= $registro['desc']."<br>";
 			$listagem .= $registro['graduacao']."<br>";
 			$listagem .= $registro['ano_fab']."<br>";
 			$listagem .= $registro['preco']."<br>";
+
+            $listagem .= "<a href='bd_encomenda.php?produto=".$registro['id']."'> Comprar </a>";
 
 			if ($registro['imagem1']){
 				$listagem .= "<img src='imagens/produto/".$registro['imagem1']."' height='384'> <br>";
@@ -105,7 +113,9 @@
 			if ($registro['imagem3']){
 				$listagem .= "<img src='imagens/produto/".$registro['imagem3']."' height='384'> <br>";
 			}		
-		}
+		}else{
+            $listagem .= "<h1>Não foi possivel Localiazar o produto</h1>";
+        }
 
 		return $listagem;
 	}

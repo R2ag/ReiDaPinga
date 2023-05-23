@@ -8,7 +8,7 @@
         $res = $db->exec(
             "DROP TABLE IF EXISTS produto;
             CREATE TABLE IF NOT EXISTS produto(
-                id      INT    AUTO_INCREMENT,
+                id      INTEGER    PRIMARY KEY AUTOINCREMENT,
                 nome    TEXT   NOT NULL,
                 desc    TEXT   NOT NULL,
                 preco   DECIMAL(10,2)    NOT NULL,
@@ -16,9 +16,7 @@
                 ano_fab INT    NOT NULL,
                 imagem1 TEXT,
                 imagem2 TEXT,
-                imagem3 TEXT,
-
-                PRIMARY KEY(id) );"
+                imagem3 TEXT);"
         );
 
         $stmt = $db->prepare(

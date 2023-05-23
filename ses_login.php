@@ -25,8 +25,9 @@
         $senha = $_POST['senha'];
 
         $bd = BD_Conectar();
-        if ( Autorizar( $bd, $login, $senha ) ){
-            SES_Fez_Login($login);
+        $id_cliente = Autorizar( $bd, $login, $senha ); 
+        if ($id_cliente > 0){
+            SES_Fez_Login($id_cliente);
             header('Location: list_produto.php');
             exit();
         } else {
