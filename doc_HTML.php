@@ -4,7 +4,7 @@
         $html = "";
         $html .= "\n<!doctype html> <html>";
         $html .= "\n<head>";
-        $html .= "\n<meta charset='utf-8'><title>Loja de Carros F1</title>";
+        $html .= "\n<meta charset='utf-8'><title>Rei da Pinga</title>";
         $html .= "\n<style>";
         $html .= "\n.conteudo { vertical-align: top; padding: 5px; margin: 5px; border: 3px ridge gray; } ";
         $html .= "\n.esq { display: none; width: 500px; } .dir { width: 1300px; } ";

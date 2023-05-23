@@ -4,10 +4,7 @@
     include_once "doc_HTML.php";
     include_once "bd_produto.php";
 
-    $id = 0;
-    if( array_key_exists("produto", $_GET) ){
-        $id = $_GET["produto"];
-    }
+    $id = ( array_key_exists("produto", $_GET)? $_GET["produto"]: 0);
 
     $BD = BD_Conectar();        
     $produto = Detalhar( $BD, $id );

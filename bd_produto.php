@@ -81,7 +81,7 @@
 	function Detalhar($Conexao, $id_produto){
 		$sql = "SELECT * FROM produto WHERE id = :id_produto;";
 		$stmt = $Conexao->prepare($sql);
-		$stmt->bindValue(':nome', $id_produto, PDO::PARAM_INT);
+		$stmt->bindValue(':id_produto', $id_produto, PDO::PARAM_INT);
 		$stmt->execute();
 
 		$REGISTROS = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -100,7 +100,7 @@
 			$listagem .= $registro['ano_fab']."<br>";
 			$listagem .= $registro['preco']."<br>";
 
-            $listagem .= "<a href='bd_encomenda.php?produto=".$registro['id']."'> Comprar </a>";
+            $listagem .= "<a href='cad_encomenda.php?produto=".$registro['id']."'> Comprar </a>";
 
 			if ($registro['imagem1']){
 				$listagem .= "<img src='imagens/produto/".$registro['imagem1']."' height='384'> <br>";
