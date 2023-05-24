@@ -14,9 +14,7 @@
                 id_produto  INTEGER,
                 nome_produto    TEXT,
                 id_encomenda    INTEGER,
-                data_encomenda  DATE,
-
-                FOREIGN KEY(id_cliente) REFERENCES cliente(id)
+                data_encomenda  DATE
             );"
         );
         echo Monta_Doc_HTML(__FILE__, "Tabela Encomenda cirada com sucesso!");

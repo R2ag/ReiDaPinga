@@ -20,16 +20,54 @@
     }
 
     function Consultar($Conexao){
-        $sql = "SELECT * FROM encomenda";
+        $sql = "";
+        $sql .= "SELECT * FROM encomenda ";
+        $sql .= "LEFT JOIN produto ON encomenda.id_produto = produto.id ";
+        $sql .= "LEFT JOIN cliente ON encomenda.id_cliente = cliente.id ";
+        $sql .= "ORDER BY produto.nome; ";
+
         $REGISTROS = $Conexao->query($sql);
 
         $listagem = "<h1>Encomendas</h1>";
 
         foreach ($REGISTROS as $registro){
-            $listagem .= '<pre>'.print_r($registro, true).'</pre><hr>';
+           /*
+            foreach($registro as $campo=>$valor){
+                if(gettype($campo) != "integer"){
+                    $listagem .= $campo." = ".$valor."<br>";
+                }
+            } */
+            $listagem .= "Produto: ". $registro["nome"]."<br>";
+            $listagem .= "R$: ".$registro["preco"]."<br>";
+            $listagem .= "<a href='conf_encomenda.php?encomenda=".$registro["id"]."'>Confirmar Encomenda</a>";
         }
 
         return $listagem;
+    }
+
+    function Confirmar($Conexao, $DADOS = []){
+        $confirmado = "";
+        $confirmado .= "<pre>".print_r($DADOS, true)."</pre>";
+
+        return $confirmado;
+    }
+
+    function Qtd_Encomendas(){
+        $bd = BD_Conectar();
+        $sql = "SELECT COUNT(id) AS qtd_encomendas FROM encomendas WHERE  id_cliente  = :cliente ;";
+
+        $stmt = $bd->prepare($sql);
+        $stmt->bindValue(":cliente", $_SESSION["Login"], PDO::PARAM_INT);
+        $stmt->execute();
+
+        $REGISTROS = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $registro = $REGISTROS[0];
+
+        $bd = null;
+
+        return $registro["qtd_encomendas"];
+
     }
 
 ?>
