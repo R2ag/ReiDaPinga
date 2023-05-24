@@ -12,8 +12,8 @@
         $data = date('Y-m-d');
 
         $stmt->bindValue(':cliente', $id_cliente, PDO::PARAM_INT);
-        $stmt->bindValue(':id_produto', $DADOS["id"], PDO::PARAM_INT);
-        $stmt->bindValue(':id_encomenda', $codigo, PDO::PARAM_INT);
+        $stmt->bindValue(':produto', $DADOS["id"], PDO::PARAM_INT);
+        $stmt->bindValue(':encomenda', $codigo, PDO::PARAM_INT);
         $stmt->bindValue(':data', $data, PDO::PARAM_STR);
 
         $stmt->execute();
