@@ -14,7 +14,8 @@
                 id_produto  INTEGER,
                 nome_produto    TEXT,
                 id_encomenda    INTEGER,
-                data_encomenda  DATE
+                data_encomenda  DATE,
+                pagamento   TEXT
             );"
         );
         echo Monta_Doc_HTML(__FILE__, "Tabela Encomenda cirada com sucesso!");

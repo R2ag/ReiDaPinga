@@ -3,8 +3,8 @@
     include_once "controle_bd.php";
 
     function Inserir($Conexao, $DADOS = []){
-        $sql = "INSERT INTO encomenda (id_cliente, id_produto, id_encomenda, data_encomenda)";
-        $sql .= "VALUES (:cliente, :produto, :encomenda, :data);";
+        $sql = "INSERT INTO encomenda (id_cliente, id_produto, id_encomenda, data_encomenda, pagamento)";
+        $sql .= "VALUES (:cliente, :produto, :encomenda, :data, :pagamento);";
 
         $stmt = $Conexao->prepare($sql);
         $id_cliente = $_SESSION['SES_Login'];
@@ -12,9 +12,10 @@
         $data = date('Y-m-d');
 
         $stmt->bindValue(':cliente', $id_cliente, PDO::PARAM_INT);
-        $stmt->bindValue(':produto', $DADOS["id"], PDO::PARAM_INT);
+        $stmt->bindValue(':produto', $DADOS["produto"], PDO::PARAM_INT);
         $stmt->bindValue(':encomenda', $codigo, PDO::PARAM_INT);
         $stmt->bindValue(':data', $data, PDO::PARAM_STR);
+        $stmt->bindValue(':pagamento', $DADOS["pagamento"], PDO::PARAM_STR);
 
         $stmt->execute();
     }
@@ -31,15 +32,21 @@
         $listagem = "<h1>Encomendas</h1>";
 
         foreach ($REGISTROS as $registro){
-           /*
-            foreach($registro as $campo=>$valor){
-                if(gettype($campo) != "integer"){
-                    $listagem .= $campo." = ".$valor."<br>";
-                }
-            } */
             $listagem .= "Produto: ". $registro["nome"]."<br>";
             $listagem .= "R$: ".$registro["preco"]."<br>";
-            $listagem .= "<a href='conf_encomenda.php?encomenda=".$registro["id"]."'>Confirmar Encomenda</a>";
+
+            $listagem .= "<form action='conf_encomenda.php' method='post'>";
+            $listagem .= "<input type='hiden' value=".$registro["id"].">";
+            $listagem .= "Forma de Pagamento: <select name='pagamento'>";
+            $listagem .= "<option>Visa</option>";
+            $listagem .= "<option>MasterCard</option>";
+            $listagem .= "<option>Pix</option>";
+            $listagem .= "<option>Boleto</option>";
+            $listagem .= "<option>outro</option>";
+            $listagem .= "</select>";
+
+            $listagem .= "<input type='submit' value='Confirmar encomenda'>";
+            $listagem .= "</form>";
         }
 
         return $listagem;
