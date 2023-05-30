@@ -23,18 +23,25 @@
     
         $conteudo .= "<pre>".print_r($curl,true)."</pre><hr>";
 
-    $json_str = curl_exec($curl);
+    $json_str = K_url("http://pagfacil.profricardoms.repl.co/registrando.php?key=".$chave_acesso);
     $json_obj = json_decode($json_str, true);
 
-    $conteudo .= "<h3> Dados Recebidos do MercadoPago </h3><hr>";
-    $conteudo .= "json_str <br><pre>".$json_str."</pre><hr>";
-    $conteudo .= "json_obj <br><pre>".print_r($json_obj,true)."</pre><hr>";
-    $cont = 1;
-    foreach( $json_obj as $campo=>$conteudo)
-    {
-        //$conteudo .= "<b>".($cont++).") ".$campo."</b>: ".$conteudo."<hr>";
-    }
+    $conteudo .= "<h3> Dados Recebidos do pagfacil </h3><hr>";
     
+    if ($json_obj["status"]=="OK") {
+        $conteudo .= "Compra realizada com sucesso!";
+    }else{
+        $conteudo .= "Erro no processamento da encomenda";
+    }
     echo Monta_Doc_HTML( basename(__FILE__), $conteudo );
 
+    function k_url($p_URL){
+        $curl = curl_init($p_URL);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        return $response;
+    }
 ?>
