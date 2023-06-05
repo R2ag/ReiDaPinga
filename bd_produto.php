@@ -1,66 +1,65 @@
 <?php 
 	include_once "controle_bd.php";
 
-    function Exibir_Formulario($Mensagem){
-        $form = "";
-        $form .= "<form action='cad_produto.php' method='post' enctype='multipart/form-data'>";
-    
-        $form .= "Nome: <input type='text' name='Nome'> <br>";
-        $form .= "Preço: <input type='text' name='Preco'><br>";
-        $form .= "Descrição: <input type='text' name='Desc'><br>";
-        $form .= "Graduação Alcoólica: <input type='text' name='Grad_Alc'><br>";
-        $form .= "Ano de Fabricação: <input type='text' name='Ano_Fab'><br>";
-        $form .= "Imagem: <input type='file' name='Imagem1'><br>";
-        $form .= "Imagem: <input type='file' name='Imagem2'><br>";
-        $form .= "Imagem: <input type='file' name='Imagem3'><br>";
-    
-        $form .= "<input type='submit' value='Enviar'>";
-        $form .= "<input type='reset' value='Cancelar'>";
-    
-        $form .= "</form>";
-    
-        if($Mensagem){
-            $form .= "<span class='erro'>".$Mensagem."</span>";
-        }
-        
-        return $form;
+    function Exibir_Formulario($Mensagem) {
+		$form = <<<HTML
+			<form action="cad_produto.php" method="post" enctype="multipart/form-data">
+				Nome: <input type="text" name="Nome"> <br>
+				Preço: <input type="text" name="Preco"><br>
+				Descrição: <input type="text" name="Desc"><br>
+				Graduação Alcoólica: <input type="text" name="Grad_Alc"><br>
+				Ano de Fabricação: <input type="text" name="Ano_Fab"><br>
+				Imagem: <input type="file" name="Imagem1"><br>
+				Imagem: <input type="file" name="Imagem2"><br>
+				Imagem: <input type="file" name="Imagem3"><br>
+		
+				<input type="submit" value="Enviar">
+				<input type="reset" value="Cancelar">
+			</form>
+		HTML;
+	
+		if ($Mensagem) {
+			$form .= "<span class='erro'>" . $Mensagem . "</span>";
+		}
+	
+		return $form;
 	}
 
-	function Inserir($Conexao, $DADOS = []){
-
-		$imagem1 = "";
-		$imagem2 = "";
-		$imagem3 = "";
+	function Inserir($Conexao, $DADOS = []) {
+		$imagens = [];
 		$error = "";
-
-		if (count($_FILES) > 0) {
+	
+		if (!empty($_FILES)) {
 			$error = Salvar_Imagem($_FILES);
-			$imagem1 = $_FILES["Imagem1"]["name"];
-			$imagem2 = $_FILES["Imagem2"]["name"];
-			$imagem3 = $_FILES["Imagem3"]["name"];
+			$imagens = [
+				$_FILES["Imagem1"]["name"],
+				$_FILES["Imagem2"]["name"],
+				$_FILES["Imagem3"]["name"]
+			];
 		}
-		
+	
 		if ($error == "") {
-			$sql = "INSERT INTO produto (nome, desc, preco, graduacao, ano_fab, imagem1, imagem2, imagem3) ";
-			$sql .=	"VALUES (:nome, :desc , :preco, :graduacao, :ano_fab, :imagem1, :imagem2, :imagem3);";
-
+			$sql = "INSERT INTO produto (nome, descricao, preco, graduacao, ano_fab, imagem1, imagem2, imagem3) ";
+			$sql .= "VALUES (:nome, :descricao, :preco, :graduacao, :ano_fab, :imagem1, :imagem2, :imagem3);";
+	
 			$stmt = $Conexao->prepare($sql);
-
-			$stmt->bindValue(':nome', $DADOS["Nome"], PDO::PARAM_STR);	
-			$stmt->bindValue(':desc', $DADOS["Desc"], PDO::PARAM_STR);
-			$stmt->bindValue(':preco', $DADOS["Preco"], PDO::PARAM_STR);
-			$stmt->bindValue(':graduacao', $DADOS["Grad_Alc"], PDO::PARAM_STR);
-			$stmt->bindValue(':ano_fab', $DADOS["Ano_Fab"], PDO::PARAM_INT);
-			$stmt->bindValue(':imagem1', $imagem1, PDO::PARAM_STR);
-			$stmt->bindValue(':imagem2', $imagem2, PDO::PARAM_STR);
-			$stmt->bindValue(':imagem3', $imagem3, PDO::PARAM_STR);
-
-			$stmt->execute();		
+	
+			$stmt->execute([
+				':nome' => $DADOS["Nome"],
+				':descricao' => $DADOS["Desc"],
+				':preco' => $DADOS["Preco"],
+				':graduacao' => $DADOS["Grad_Alc"],
+				':ano_fab' => $DADOS["Ano_Fab"],
+				':imagem1' => $imagens[0] ?? '',
+				':imagem2' => $imagens[1] ?? '',
+				':imagem3' => $imagens[2] ?? ''
+			]);
 		}
-
+	
 		return $error;
 	}
-
+	
+	
 	function Consultar($Conexao){
 		$REGISTROS = $Conexao->query("SELECT * FROM produto;");
 
@@ -81,8 +80,7 @@
 	function Detalhar($Conexao, $id_produto){
 		$sql = "SELECT * FROM produto WHERE id = :id_produto;";
 		$stmt = $Conexao->prepare($sql);
-		$stmt->bindValue(':id_produto', $id_produto, PDO::PARAM_INT);
-		$stmt->execute();
+		$stmt->execute([ ':id_produto' => $id_produto]);
 
 		$REGISTROS = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -95,7 +93,7 @@
             $listagem .= "<h1>Produto: </h1>";
             
             $listagem .= '<h4>'.$registro['nome'].'</h4>';
-			$listagem .= $registro['desc']."<br>";
+			$listagem .= $registro['descricao']."<br>";
 			$listagem .= $registro['graduacao']."<br>";
 			$listagem .= $registro['ano_fab']."<br>";
 			$listagem .= $registro['preco']."<br>";

@@ -10,7 +10,7 @@
 
     if ( count($_POST) > 0 ){
         $BD = BD_Conectar();
-        Inserir( $BD, $_POST );
+        $msg = Inserir( $BD, $_POST );
         BD_Desconectar( $BD );
     }
     

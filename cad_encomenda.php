@@ -5,9 +5,9 @@
 
     $conteudo = "";
 
-    if (count($_POST) > 0) {
+    if (count($_GET) > 0) {
         $BD = BD_Conectar();
-        $mensagem = Inserir($BD, $_POST);
+        Inserir($BD, $_POST);
         BD_Desconectar($BD);
         $conteudo .= "Encomenda Realizada com sucesso!";
     }else{

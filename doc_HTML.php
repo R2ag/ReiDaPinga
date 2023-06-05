@@ -1,67 +1,157 @@
 <?php
 
-    function Monta_Doc_HTML( $Origem, $p_Conteudo, $p_Limpar_Sessao = false ){
-        $html = "";
-        $html .= "\n<!doctype html> <html>";
-        $html .= "\n<head>";
-        $html .= "\n<meta charset='utf-8'><title>Rei da Pinga</title>";
-        $html .= "\n<style>";
-        $html .= "\n.conteudo { vertical-align: top; padding: 5px; margin: 5px; border: 3px ridge gray; } ";
-        $html .= "\n.esq { display: none; width: 500px; } .dir { width: 1300px; } ";
-        $html .= "\n.menu { display: inline-block; width: 120px; height: 30px; ";
-        $html .= "\n        border-radius: 5px; text-align: center; vertical-align: middle; ";
-        $html .= "\n        text-decoration: none; line-height: 30px; margin: 5px; } ";
-        $html .= "\n.amarelo  { background-color: yellow;  } ";
-        $html .= "\n.laranja  { background-color: orange;  } ";
-        $html .= "\n.vermelho { background-color: red;  } ";
-        $html .= "\n.verde    { background-color: limegreen;  } ";
-        $html .= "\n.roxo     { background-color: purple; color: white; } ";
-        $html .= "\n#cookies  { background-color: #aaffaa; color: black; } ";
-        $html .= "\n</style>";
-        $html .= "\n</head>";
-        $html .= "\n<body><center>";
-        
-        $html .= "\n<table><tr>";
-        $html .= "\n<td class='conteudo esq' id='controle'>";
-        $html .= "\n<hr>".Cookies()."<hr>";
+function Monta_Doc_HTML($Origem, $p_Conteudo, $p_Limpar_Sessao = false){
+    $html = <<<HTML
+        <!doctype html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Loja de Carros F1</title>
+            <style>
+                * {
+                    margin: 0px;
+                    padding: 0px;
+                    box-sizing: border-box;
+                    font-size: 16px;
+                    line-height: 1.35;
+                }
 
-        $html .= "\n<hr>get_included_files(): <br><pre>";
-        $html .= print_r(get_included_files(),true)."</pre><hr>";
-        
-        $html .= "\n<hr>GLOBALS: <br><pre>";
-        $html .= print_r($GLOBALS,true)."</pre><hr>";
-        
-        $html .= "\n</td>";
-        
-        $html .= "\n<td class='conteudo dir'>";
-        $html .= Menu($Origem);
-        $html .= Javascript($p_Limpar_Sessao);
-        $html .= $p_Conteudo;
-        $html .= "\n</td>";
-        
-        $html .= "\n</tr></table>";
-        
-        $html .= "\n</center></body>";
-        $html .= "\n</html>";
-        
-        return $html;
-    }
+                .conteudo {
+                    padding: 5px;
+                    margin: 5px;
+                    border: 3px ridge gray;
+                }
+
+                .esq {
+                    display: none;
+                    width: 500px;
+                }
+
+                .dir {
+                    width: 1300px;
+                }
+
+                .menu {
+                    display: inline-block;
+                    width: 90px;
+                    height: 55px;
+                    border-radius: 5px;
+                    text-align: center;
+                    vertical-align: middle;
+                    text-decoration: none;
+                    margin: 5px;
+                    padding: 5px;
+                }
+
+                .erro {
+                    background-color: red;
+                    color: yellow;
+                    font-weight: 800;
+                }
+
+                .amarelo {
+                    background-color: yellow;
+                }
+
+                .azul {
+                    background-color: DarkBlue;
+                    color: white;
+                }
+
+                .laranja {
+                    background-color: orange;
+                }
+
+                .vermelho {
+                    background-color: red;
+                }
+
+                .verde {
+                    background-color: limegreen;
+                }
+
+                .roxo {
+                    background-color: purple;
+                    color: white;
+                }
+
+                #cont_encomenda {
+                    background-color: red;
+                    color: white;
+                    border-radius: 10px;
+                    display: inline-block;
+                    padding: 2px;
+                    font-size: 12px;
+                    line-height: 1.2;
+                }
+
+                #cookies {
+                    background-color: #aaffaa;
+                    color: black;
+                }
+            </style>
+        </head>
+        <body>
+        <div class="conteudo esq" id="controle">
+            <hr>
+            {Cookies()}
+            <hr>
+            get_included_files(): <br>
+            <pre>{print_r(get_included_files(), true)}</pre>
+            <hr>
+            _FILES: <br>
+            <pre>{print_r($_FILES, true)}</pre>
+            <hr>
+            _SERVER: <br>
+            <pre>{print_r($_SERVER, true)}</pre>
+            <hr>
+        </div>
+        <div class="conteudo dir">
+            {Menu($Origem)}
+            {Javascript($p_Limpar_Sessao)}
+            <center>{$p_Conteudo}</center>
+        </div>
+        </body>
+        </html>
+        HTML;
+
+    return $html;
+}
 
 
-    function Menu( $p_Origem="" ){
-        $Menu_Principal = [ "Lit. Produtos"=>"list_produto.php", "Cad. Produto" => "cad_produto.php", "List. Cliente"=>"list_cliente.php", "Cad. Cliente"=>"cad_cliente.php", "Login"=>"ses_login.php", "Sair"=>"ses_logout.php" ];
-            
-        $menu = "<br><br><center>";
-        $menu .= "\n<span class='menu roxo' onclick='Mostrar()'><<<</span>";
-        $menu .= "\n<a class='menu laranja' href='#'>V2107</a>";
-        foreach( $Menu_Principal as $link=>$arquivo ){
-            $cor = ( $p_Origem=="" ? 'vermelho' : ($p_Origem==$arquivo ? "verde" : "amarelo") );
-            $menu .= "\n<a class='menu ".$cor."' href='".$arquivo."'>".$link."</a>";
+
+function Menu($p_Origem = ""){
+    $Menu_Principal = [
+        "📱 List. Produtos" => "list_produto.php",
+        "📝 Cad. Produto" => "cad_produto.php",
+        "👨‍👩‍👧‍👦 List. Cliente" => "list_cliente.php",
+        "🪪 Cad. Cliente" => "cad_cliente.php",
+        "🛒 Compras" => "list_encomenda.php",
+        "🛃 Login" => "ses_login.php",
+        "⚽ Sair" => "ses_logout.php"
+    ];
+
+    $menu = "<br><br><center>";
+    $menu .= "<span class='menu roxo' onclick='Mostrar()'>⬅️</span>";
+    $menu .= "<a class='menu azul' href='#'>⚒️ V0720</a>";
+    foreach ($Menu_Principal as $link => $arquivo) {
+        $cor = ($p_Origem == "" ? 'vermelho' : ($p_Origem == $arquivo ? "verde" : "amarelo"));
+
+        $contador = "";
+        if ($link == "🛒 Compras") {
+            $contador .= "&nbsp;<span id='cont_encomenda'>";
+            //$contador .= E_Quant_Encomendas();
+            $contador .= "</span>";
         }
-        $menu .= "\n</center><br><br>";
-            
-        return $menu;            
+
+        $xp_cliente = ($link == "🛃 Login" ? "<br>{$_SESSION['SES_Login']}" : "");
+        $menu .= "<a class='menu {$cor}' href='{$arquivo}'>{$link}{$contador}{$xp_cliente}</a>";
     }
+    $menu .= "</center><br><br>";
+
+    return $menu;
+}
+
         
 		
     function Javascript( $p_Limpar_Sessao = false ){
@@ -101,5 +191,4 @@
 
         return $criar_banco;
     }
-
 ?>

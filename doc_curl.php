@@ -9,13 +9,13 @@
 
     // Configurando a conexão:
         $chave_acesso = "Abre-de-Cézamo";
-        curl_setopt($curl, CURLOPT_URL, "https://api.mercadopago.com/?key=".$chave_acesso);
+        curl_setopt($curl, CURLOPT_URL, "http://pagfacil.profricardoms.repl.co/registrando.php?key=".$chave_acesso);
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     
     // Passa as informações da compra....
         $compra = array();
-        $compra["XP_Encomenda"] = 1;
+        $compra["id_Encomenda"] = 1;
         $compra["Produto"] = $P_Nome;
         $compra["Preco"] = $P_Preco;
         $compra["Pagamento"] = "Visa ou PIX ou Boleto ou....";

@@ -2,27 +2,26 @@
 
     include_once "controle_bd.php";
 
-    function Inserir($Conexao, $DADOS = []){
-        $sql = "INSERT INTO encomenda (id_cliente, id_produto, id_encomenda, data_encomenda, pagamento)";
+    function Inserir($Conexao, $DADOS = []) {
+        $sql = "INSERT INTO encomenda (id_cliente, id_produto, id_encomenda, data_encomenda, pagamento) ";
         $sql .= "VALUES (:cliente, :produto, :encomenda, :data, :pagamento);";
 
-        $stmt = $Conexao->prepare($sql);
         $id_cliente = $_SESSION['SES_Login'];
         $codigo  = random_int(1000, 9999);
         $data = date('Y-m-d');
 
-        $stmt->bindValue(':cliente', $id_cliente, PDO::PARAM_INT);
-        $stmt->bindValue(':produto', $DADOS["produto"], PDO::PARAM_INT);
-        $stmt->bindValue(':encomenda', $codigo, PDO::PARAM_INT);
-        $stmt->bindValue(':data', $data, PDO::PARAM_STR);
-        $stmt->bindValue(':pagamento', $DADOS["pagamento"], PDO::PARAM_STR);
-
-        $stmt->execute();
+        $stmt = $Conexao->prepare($sql);
+        $stmt->execute([
+            ':cliente' => $id_cliente,
+            ':produto' => $DADOS["produto"],
+            ':encomenda' => $codigo,
+            ':data' => $data,
+            ':pagamento' => $DADOS["pagamento"]
+        ]);
     }
 
-    function Consultar($Conexao){
-        $sql = "";
-        $sql .= "SELECT * FROM encomenda ";
+    function Consultar($Conexao) {
+        $sql = "SELECT * FROM encomenda ";
         $sql .= "LEFT JOIN produto ON encomenda.id_produto = produto.id ";
         $sql .= "LEFT JOIN cliente ON encomenda.id_cliente = cliente.id ";
         $sql .= "ORDER BY produto.nome; ";
@@ -31,50 +30,46 @@
 
         $listagem = "<h1>Encomendas</h1>";
 
-        foreach ($REGISTROS as $registro){
-            $listagem .= "Produto: ". $registro["nome"]."<br>";
-            $listagem .= "R$: ".$registro["preco"]."<br>";
+        foreach ($REGISTROS as $registro) {
+            $listagem .= "Produto: " . $registro["nome"] . "<br>";
+            $listagem .= "R$: " . $registro["preco"] . "<br>";
 
-            $listagem .= "<form action='conf_encomenda.php' method='post'>";
-            $listagem .= "<input type='hiden' value=".$registro["id"].">";
-            $listagem .= "Forma de Pagamento: <select name='pagamento'>";
-            $listagem .= "<option>Visa</option>";
-            $listagem .= "<option>MasterCard</option>";
-            $listagem .= "<option>Pix</option>";
-            $listagem .= "<option>Boleto</option>";
-            $listagem .= "<option>outro</option>";
-            $listagem .= "</select>";
-
-            $listagem .= "<input type='submit' value='Confirmar encomenda'>";
-            $listagem .= "</form>";
+            $listagem .= sprintf('<form action="conf_encomenda.php" method="post">
+                <input type="hidden" value="%s">
+                Forma de Pagamento: <select name="pagamento">
+                <option>Visa</option>
+                <option>MasterCard</option>
+                <option>Pix</option>
+                <option>Boleto</option>
+                <option>outro</option>
+                </select>
+                <input type="submit" value="Confirmar encomenda">
+                </form>', $registro["id"]);
         }
 
         return $listagem;
     }
 
-    function Confirmar($Conexao, $DADOS = []){
-        $confirmado = "";
-        $confirmado .= "<pre>".print_r($DADOS, true)."</pre>";
-
+    function Confirmar($Conexao, $DADOS = []) {
+        $confirmado = "<pre>" . print_r($DADOS, true) . "</pre>";
         return $confirmado;
     }
 
-    function Qtd_Encomendas(){
+    function Qtd_Encomendas() {
         $bd = BD_Conectar();
-        $sql = "SELECT COUNT(id) AS qtd_encomendas FROM encomendas WHERE  id_cliente  = :cliente ;";
-
+        $sql = "SELECT COUNT(id) AS qtd_encomendas FROM encomenda WHERE id_cliente = :cliente;";
+    
         $stmt = $bd->prepare($sql);
-        $stmt->bindValue(":cliente", $_SESSION["Login"], PDO::PARAM_INT);
-        $stmt->execute();
-
-        $REGISTROS = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $registro = $REGISTROS[0];
-
+        $stmt->execute([
+            ':cliente' => $_SESSION["Login"]
+        ]);
+    
+        $registro = $stmt->fetch(PDO::FETCH_ASSOC);
+    
         $bd = null;
-
+    
         return $registro["qtd_encomendas"];
-
     }
+
 
 ?>
