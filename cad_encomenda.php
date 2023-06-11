@@ -7,7 +7,7 @@
 
     if (count($_GET) > 0) {
         $BD = BD_Conectar();
-        Inserir($BD, $_POST);
+        $msg = Insert($BD, $_GET);
         BD_Desconectar($BD);
         $conteudo .= "Encomenda Realizada com sucesso!";
     }else{

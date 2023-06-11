@@ -15,7 +15,8 @@
                 nome_produto    TEXT,
                 id_encomenda    INTEGER,
                 data_encomenda  DATE,
-                pagamento   TEXT
+                pagamento   TEXT,
+                finalizada  BOOL
             );"
         );
 
