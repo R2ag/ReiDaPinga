@@ -42,16 +42,19 @@
         $listagem .= "R$: " . $registro["preco"] . "<br>";
 
         $listagem .= sprintf('<form action="conf_encomenda.php" method="post">
+            <input type="hidden" name="login" value="%s">
             <input type="hidden" name="id" value="%s">
+            <input type="hidden" name="produto" value="%s">
+            <input type="hidden" name="preco" value="%s">
+            
             Forma de Pagamento: <select name="pagamento">
             <option value="Visa">Visa</option>
-            <option value="MasterCard">MasterCard</option>
             <option value="Pix">Pix</option>
             <option value="Boleto">Boleto</option>
-            <option value="Outro">Outro</option>
+            <option value="etc">etc...</option>
             </select>
             <input type="submit" value="Confirmar encomenda">
-            </form>', $registro["id"]);
+            </form>', $_SESSION['SES_Login'], $registro["id"], $registro["nome"], $registro["preco"]);
     }
 
     return $listagem;
@@ -60,8 +63,19 @@
 
 
     function Confirmar($Conexao, $DADOS = []) {
-        $confirmado = "<pre>" . print_r($DADOS, true) . "</pre>";
-        return $confirmado;
+        $sql = "UPDATE
+                  encomenda
+                SET
+                  finalizada = true
+                WHERE
+                  encomenda.id = :id";
+        
+        $stmt = $Conexao->prepare($sql);
+        $stmt->execute([
+            ':id' => $DADOS["id"]
+        ]);
+
+      return 'Encomenda Finalizada';
     }
 
     function Qtd_Encomendas() {
